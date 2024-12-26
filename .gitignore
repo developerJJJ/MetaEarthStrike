@@ -31,6 +31,7 @@ UserSettings/
 *.log
 
 # IDE-specific files
+.vscode/
 .vs/
 .idea/
 

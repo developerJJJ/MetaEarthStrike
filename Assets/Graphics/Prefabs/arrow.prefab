@@ -181,21 +181,12 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 2
-      outSlope: 2
-      tangentMode: 0
-      weightedMode: 0
-      inWeight: 0
-      outWeight: 0
-    - serializedVersion: 3
-      time: 0.8682211
-      value: 0.21947017
-      inSlope: -1.483382
-      outSlope: -1.483382
+      inSlope: 2.0367253
+      outSlope: 2.0367253
       tangentMode: 0
       weightedMode: 0
       inWeight: 0.33333334
-      outWeight: 0.33333334
+      outWeight: 0.0606053
     - serializedVersion: 3
       time: 0.9935608
       value: 0.002357483
@@ -210,4 +201,4 @@ MonoBehaviour:
     m_RotationOrder: 4
   damage: 10
   speed: 10
-  lifetime: 2
+  lifetime: 0.7

@@ -162,6 +162,21 @@ public class Unit : MonoBehaviour
                     Vector2 direction = (target.transform.position - transform.position).normalized;
                     float distance = Vector2.Distance(transform.position, target.transform.position);
                     projectileScript.Initialize(direction, distance);
+
+                    // FLIP THE PROJECTILE
+                    SpriteRenderer projectileSprite = projectile.GetComponent<SpriteRenderer>();
+                    if (projectileSprite != null)
+                    {
+                        if (movementDirection < 0) // If the unit is facing left
+                        {
+                            projectileSprite.flipX = true; // Flip the projectile horizontally
+                        }
+                        else
+                        {
+                            projectileSprite.flipX = false;
+                        }
+                    }
+
                     projectile.tag = gameObject.tag; // Match projectile tag with the unit's tag
                 }
             }

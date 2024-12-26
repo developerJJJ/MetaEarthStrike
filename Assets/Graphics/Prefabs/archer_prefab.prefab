@@ -181,7 +181,7 @@ MonoBehaviour:
   maxHealth: 100
   attackDamage: 20
   attackSpeed: 0.4
-  attackRange: 10
+  attackRange: 15
   moveSpeed: 8
   animator: {fileID: 3256005318260313561}
   projectilePrefab: {fileID: 7142287044366714663, guid: bb1651861a07b6c469f27944edbdcc63, type: 3}

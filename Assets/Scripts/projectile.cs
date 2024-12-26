@@ -5,7 +5,7 @@ public class Projectile : MonoBehaviour
     public AnimationCurve heightCurve;
     public int damage = 10;
     public float speed = 10f;
-    public float lifetime = 2f; // Time before the projectile is destroyed
+    public float lifetime = 1f; // Time before the projectile is destroyed
     private Vector2 direction;
     private Vector2 startPosition;
     private Vector2 targetPosition;
@@ -21,13 +21,12 @@ public class Projectile : MonoBehaviour
 
     void Update()
     {
-
         elapsedTime += Time.deltaTime;
         float progress = Mathf.Clamp01(elapsedTime / lifetime);
 
         // Calculate position based on progress and curve
         float x = Mathf.Lerp(startPosition.x, targetPosition.x, progress);
-        float y = Mathf.Lerp(startPosition.y, targetPosition.y, progress) + heightCurve.Evaluate(progress);
+        float y = Mathf.Lerp(startPosition.y, targetPosition.y, progress) + 2.5f * heightCurve.Evaluate(progress);
 
         transform.position = new Vector2(x, y);
     }

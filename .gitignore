@@ -1,2 +1,49 @@
-Library/
+# Unity Generated Files
 Temp/
+Library/
+obj/
+*.dll
+*.pdb
+*.exe
+*.meta
+*.userprefs
+
+# Visual Studio Generated Files
+*.suo
+*.user
+*.vs
+*.VC.db
+
+# Build Files
+Builds/
+
+# Packages (Managed by Unity Package Manager)
+Packages/
+
+# Editor Preferences
+UserSettings/
+
+# Temporary Files
+*.tmp
+*.bak
+
+# Log Files
+*.log
+
+# IDE-specific files
+.vs/
+.idea/
+
+# Local Settings
+LocalSettings.asset
+
+# Other common files
+*.suo
+*.user
+*.vspscc
+*.scc
+*~
+
+# OS generated files
+.DS_Store
+Thumbs.db

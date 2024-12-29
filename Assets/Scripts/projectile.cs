@@ -15,6 +15,7 @@ public class Projectile : MonoBehaviour
     {
         startPosition = transform.position;
         targetPosition = startPosition + (dir.normalized * distance);
+        direction = dir.normalized;
 
         Destroy(gameObject, lifetime); // Destroy the projectile after its lifetime
     }
@@ -28,7 +29,18 @@ public class Projectile : MonoBehaviour
         float x = Mathf.Lerp(startPosition.x, targetPosition.x, progress);
         float y = Mathf.Lerp(startPosition.y, targetPosition.y, progress) + 2.5f * heightCurve.Evaluate(progress);
 
-        transform.position = new Vector2(x, y);
+        Vector2 currentPosition = new Vector2(x, y);
+
+        // Update position
+        transform.position = currentPosition;
+
+        // Rotate to face target
+        if (progress < 1f)
+        {
+            Vector2 lookDirection = (targetPosition - currentPosition).normalized;
+            float angle = Mathf.Atan2(lookDirection.y, lookDirection.x) * Mathf.Rad2Deg;
+            transform.rotation = Quaternion.Euler(0, 0, angle);
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

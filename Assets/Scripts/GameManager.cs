@@ -5,36 +5,53 @@ using TMPro;
 public class GameManager : MonoBehaviour
 {
     public TMP_Text goldText;
-    public float goldIncrementPerSecond = 1f; // Gold gained per second (float for smoother increase)
+    public float goldIncrementPerSecond = 5f; // Gold gained per second (float for smoother increase)
     public int playerGold = 0;
     public int enemyGold = 0;
     public Transform playerSpawnPoint;
     public Transform enemySpawnPoint;
-    public GameObject antPrefab;
-    public Button spawnButton;
-    public float spawnInterval = 5f;
+    public GameObject prefabWarrior;
+    public GameObject prefabArcher;
+    public Button spawnButton1;
+    public Button spawnButton2;
+    public float spawnInterval = 10f;
     private float playerSpawnTimer = 0f;
     private float enemySpawnTimer = 0f;
+    private float goldAccumulator = 0f; // Add this line
+    private int accumulatedGold = 0; // Add this line
 
     void Start()
     {
-        SpawnUnit(antPrefab, true);
-        SpawnUnit(antPrefab, false);
-        spawnButton.onClick.AddListener(SpawnUnitWithCost);
+        SpawnUnit(prefabWarrior, true);
+        SpawnUnit(prefabWarrior, false);
+        spawnButton1.onClick.AddListener(() => SpawnUnitWithCost(1));
+        spawnButton2.onClick.AddListener(() => SpawnUnitWithCost(2));
     }
 
-    public void SpawnUnitWithCost()
+    public void SpawnUnitWithCost(int buttonNumber)
     {
-        int cost = 10;
+        int cost;
+        GameObject unitPrefab;
+
+        if (buttonNumber == 1)
+        {
+            cost = 10;
+            unitPrefab = prefabWarrior;
+        }
+        else if (buttonNumber == 2)
+        {
+            cost = 12;
+            unitPrefab = prefabArcher;
+        }
+        else
+        {
+            return; // Invalid button number
+        }
 
         if (playerGold >= cost)
         {
             playerGold -= cost;
-            SpawnUnit(antPrefab, true);
-        }
-        else
-        {
-            Debug.LogError("Not enough gold to spawn Unit!");
+            SpawnUnit(unitPrefab, true);
         }
     }
 
@@ -57,8 +74,6 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    private float goldAccumulator = 0f; // Add this line
-    private int accumulatedGold = 0; // Add this line
 
     void Update()
     {
@@ -67,13 +82,13 @@ public class GameManager : MonoBehaviour
 
         if (playerSpawnTimer >= spawnInterval)
         {
-            SpawnUnit(antPrefab, true);
+            SpawnUnit(prefabWarrior, true);
             playerSpawnTimer = 0f;
         }
 
         if (enemySpawnTimer >= spawnInterval)
         {
-            SpawnUnit(antPrefab, false);
+            SpawnUnit(prefabWarrior, false);
             enemySpawnTimer = 0f;
         }
 
@@ -86,8 +101,6 @@ public class GameManager : MonoBehaviour
             playerGold += accumulatedGold; // Add the accumulated gold
             goldAccumulator -= accumulatedGold; // Reset the accumulator, keeping the fractional part
         }
-
-        Debug.Log("Player Gold: " + playerGold + ", Accumulator: " + goldAccumulator + ", Time.deltaTime: " + Time.deltaTime); // Improved debug
 
         if (goldText != null)
         {

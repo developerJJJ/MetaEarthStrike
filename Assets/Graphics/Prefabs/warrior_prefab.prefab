@@ -106,7 +106,7 @@ Rigidbody2D:
   m_Mass: 2
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 0
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -148,7 +148,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
@@ -180,10 +180,11 @@ MonoBehaviour:
   maxHealth: 100
   attackDamage: 20
   attackSpeed: 0.5
+  attackRange: 5
   moveSpeed: 8
   animator: {fileID: 3256005318260313561}
-  attackAnimation: {fileID: 7400000, guid: e7e9819cccfadae4d8d92a259db8252a, type: 2}
-  dieAnimation: {fileID: 7400000, guid: 6f2809f5ff377d445b30f92cdf910880, type: 2}
+  projectilePrefab: {fileID: 0}
+  projectileSpawnPoint: {fileID: 0}
 --- !u!95 &3256005318260313561
 Animator:
   serializedVersion: 7

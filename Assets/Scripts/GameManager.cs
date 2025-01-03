@@ -5,7 +5,7 @@ using TMPro;
 public class GameManager : MonoBehaviour
 {
     public TMP_Text goldText;
-    public float goldIncrementPerSecond = 5f; // Gold gained per second (float for smoother increase)
+    public float goldIncrementPerSecond = 10f; // Gold gained per second (float for smoother increase)
     public int playerGold = 0;
     public int enemyGold = 0;
     public Transform playerSpawnPoint;
@@ -73,7 +73,6 @@ public class GameManager : MonoBehaviour
             unitScript.SetDirection(isPlayer ? 1f : -1f);
         }
     }
-
 
     void Update()
     {

@@ -59,18 +59,21 @@ public class GameManager : MonoBehaviour
     {
         Transform spawnLocation = isPlayer ? playerSpawnPoint : enemySpawnPoint;
         GameObject unit = Instantiate(unitPrefab, spawnLocation.position, Quaternion.identity);
-        unit.tag = isPlayer ? "PlayerUnit" : "EnemyUnit";
+
+        // *** THIS IS THE KEY CHANGE ***
+        Unit unitScript = unit.GetComponent<Unit>();
+        if (unitScript != null)
+        {
+            unitScript.team = isPlayer ? "Player" : "Enemy"; // Set the team here!
+            unitScript.SetDirection(isPlayer ? 1f : -1f);
+        }
+
+        unit.tag = isPlayer ? "PlayerUnit" : "EnemyUnit"; // Set the tag AFTER setting the team
 
         SpriteRenderer spriteRenderer = unit.GetComponent<SpriteRenderer>();
         if (spriteRenderer != null)
         {
             spriteRenderer.color = isPlayer ? new Color(0.5f, 0.5f, 1f, 1f) : new Color(1f, 0.5f, 0.5f, 1f);
-        }
-
-        Unit unitScript = unit.GetComponent<Unit>();
-        if (unitScript != null)
-        {
-            unitScript.SetDirection(isPlayer ? 1f : -1f);
         }
     }
 

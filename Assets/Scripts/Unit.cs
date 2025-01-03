@@ -1,74 +1,95 @@
-using System;
 using System.Collections;
 using UnityEngine;
 
 public class Unit : MonoBehaviour
 {
-    public GameObject healthBarPrefab; // Reference to the Health Bar prefab
+    public GameObject healthBarPrefab;
     public int maxHealth = 100;
     public int attackDamage = 10;
-    public float attackSpeed = 1f; // Time in seconds between attacks
-    public float attackRange = 1f; // Range within which the unit attacks
-    public float moveSpeed = 5f; // Speed of movement
-    public Animator animator; // Reference to Animator
-    public GameObject projectilePrefab; // Reference to the Projectile prefab
-    public Transform projectileSpawnPoint; // Point from which the projectile is spawned
+    public float attackSpeed = 1f;
+    public float attackRange = 1f;
+    public float moveSpeed = 5f;
+    public Animator animator;
+    public GameObject projectilePrefab;
+    public Transform projectileSpawnPoint;
+    public string team; // Team identifier
 
     private int currentHealth;
-    private bool isAttacking = false; // Tracks if the unit is currently attacking
+    private bool isAttacking = false;
     private GameObject healthBar;
-    private GameObject target; // Current target enemy
-    private Rigidbody2D rb; // Reference to Rigidbody2D
-    private float movementDirection = 0f; // Movement direction (-1 for left, 1 for right)
-    private bool isDead = false; // Tracks if the unit is dead
+    private GameObject target;
+    private Rigidbody2D rb;
+    private float movementDirection = 0f;
+    private bool isDead = false;
+    private Collider2D myCollider;
 
     void Start()
     {
-        rb = GetComponent<Rigidbody2D>(); // Initialize Rigidbody2D
-        animator = GetComponent<Animator>(); // Initialize Animator
-
+        rb = GetComponent<Rigidbody2D>();
+        animator = GetComponent<Animator>();
         currentHealth = maxHealth;
 
-        // Instantiate the health bar and set it as a child of the unit
         healthBar = Instantiate(healthBarPrefab, transform.position, Quaternion.identity, transform);
         healthBar.transform.localPosition = new Vector3(0, 5.4f, 0);
 
-        // Set max health in the HealthBar script
         HealthBar healthBarScript = healthBar.GetComponentInChildren<HealthBar>();
         if (healthBarScript != null)
         {
             healthBarScript.SetMaxHealth(maxHealth);
         }
+        myCollider = GetComponent<Collider2D>();
     }
+
     private void CheckForTargetsInRange()
     {
         Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, attackRange);
+        float closestDistance = Mathf.Infinity;
+        GameObject closestTarget = null;
 
         foreach (var hit in hits)
         {
-            // Check if the target is an enemy
-            if ((gameObject.CompareTag("PlayerUnit") && hit.CompareTag("EnemyUnit")) ||
-                (gameObject.CompareTag("EnemyUnit") && hit.CompareTag("PlayerUnit")))
+            Unit hitUnit = hit.GetComponent<Unit>();
+
+            if (hit.gameObject != gameObject && hitUnit != null && hitUnit.team != team)
             {
-                target = hit.gameObject; // Set the target
-                if (!isAttacking)
+                Vector2 closestPoint = hit.ClosestPoint(transform.position);
+                float distance = Vector2.Distance(transform.position, closestPoint);
+
+                if (distance < closestDistance)
                 {
-                    StartCoroutine(Attack()); // Start attacking the target
+                    closestDistance = distance;
+                    closestTarget = hit.gameObject;
                 }
-                break;
+            }
+        }
+
+        target = closestTarget;
+
+        if (target != null && !isAttacking)
+        {
+            StartCoroutine(Attack());
+        }
+        else if (target == null && isAttacking)
+        {
+            StopAllCoroutines();
+            isAttacking = false;
+            if (animator != null)
+            {
+                animator.ResetTrigger("Attack");
             }
         }
     }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
+
     void FixedUpdate()
     {
         CheckForTargetsInRange();
 
-        // Move the unit using Rigidbody2D (physics-based movement)
         if (rb.bodyType != RigidbodyType2D.Static)
         {
             if (movementDirection != 0 && !isAttacking && !isDead)
@@ -81,15 +102,15 @@ public class Unit : MonoBehaviour
             }
             else
             {
-                rb.linearVelocity = Vector2.zero; // Stop movement when attacking or idle
+                rb.linearVelocity = Vector2.zero;
             }
         }
     }
 
     public void SetDirection(float dir)
     {
-        movementDirection = dir; // Set movement direction
-        UpdateDirection(dir); // Update sprite direction
+        movementDirection = dir;
+        UpdateDirection(dir);
     }
 
     void UpdateDirection(float direction)
@@ -102,84 +123,54 @@ public class Unit : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-
-        if (target == null)
-            if (
-                (gameObject.CompareTag("PlayerUnit") && collision.gameObject.CompareTag("EnemyUnit")) ||
-                (gameObject.CompareTag("EnemyUnit") && collision.gameObject.CompareTag("PlayerUnit"))
-                )
-            {
-                if (rb.bodyType != RigidbodyType2D.Static)
-                {
-                    rb.linearVelocity = Vector2.zero; // Stop movement on collision
-                }
-                target = collision.gameObject; // Set the target to the colliding enemy
-
-                if (!isAttacking)
-                {
-                    StartCoroutine(Attack());
-                }
-            }
-    }
-
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject == target)
-        {
-            target = null;
-            StopAllCoroutines();
-            isAttacking = false;
-            if (animator != null)
-            {
-                animator.ResetTrigger("Attack");
-            }
-        }
-    }
     private IEnumerator Attack()
     {
         isAttacking = true;
-
-        while (target != null && Vector2.Distance(transform.position, target.transform.position) <= attackRange)
+        while (target != null)
         {
-            _TriggerAttack();
-
-            if (projectilePrefab == null || projectileSpawnPoint == null)
+            if (Vector2.Distance(transform.position, target.GetComponent<Collider2D>().ClosestPoint(transform.position)) <= attackRange)
             {
-                // Deal damage directly if no projectile
-                Unit targetUnit = target.GetComponent<Unit>();
-                if (targetUnit != null)
+                _TriggerAttack();
+
+                if (projectilePrefab == null || projectileSpawnPoint == null)
                 {
-                    targetUnit.TakeDamage(attackDamage);
+                    Unit targetUnit = target.GetComponent<Unit>();
+                    if (targetUnit != null)
+                    {
+                        targetUnit.TakeDamage(attackDamage);
+                    }
+                    else
+                    {
+                        break;
+                    }
                 }
                 else
                 {
-                    break;
+                    GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
+                    Projectile projectileScript = projectile.GetComponent<Projectile>();
+                    if (projectileScript != null)
+                    {
+                        Vector2 direction = (target.transform.position - transform.position).normalized;
+                        float distance = Vector2.Distance(transform.position, target.transform.position);
+                        projectileScript.Initialize(direction, distance);
+                        projectile.tag = gameObject.tag;
+                    }
                 }
+
+                yield return new WaitForSeconds(GetAnimationLength("Attack"));
+                yield return new WaitForSeconds(attackSpeed);
             }
             else
             {
-                // Spawn a projectile
-                GameObject projectile = Instantiate(projectilePrefab, projectileSpawnPoint.position, Quaternion.identity);
-                Projectile projectileScript = projectile.GetComponent<Projectile>();
-                if (projectileScript != null)
-                {
-                    Vector2 direction = (target.transform.position - transform.position).normalized;
-                    float distance = Vector2.Distance(transform.position, target.transform.position);
-                    projectileScript.Initialize(direction, distance);
-                    projectile.tag = gameObject.tag; // Match projectile tag with the unit's tag
-                }
+                break;
             }
 
-            // Wait for the attack animation to complete
-            yield return new WaitForSeconds(GetAnimationLength("Attack"));
-
-            // Wait for the attack speed duration before the next attack
-            yield return new WaitForSeconds(attackSpeed);
         }
-
         isAttacking = false;
+        if (animator != null)
+        {
+            animator.ResetTrigger("Attack");
+        }
     }
 
     private float GetAnimationLength(string animationName)
@@ -193,12 +184,12 @@ public class Unit : MonoBehaviour
                 return clip.length;
             }
         }
-        return 0.5f; // Default duration if animation not found
+        return 0.5f;
     }
 
     private void _TriggerAttack()
     {
-        if (animator != null && target != null)
+        if (animator != null && target != null && target.GetComponent<Unit>() != null)
         {
             animator.SetTrigger("Attack");
         }
@@ -212,11 +203,11 @@ public class Unit : MonoBehaviour
         if (animator != null)
         {
             animator.SetTrigger("Die");
-            Destroy(gameObject, GetAnimationLength("Die")); // Wait for the die animation to complete
+            Destroy(gameObject, GetAnimationLength("Die"));
         }
         else
         {
-            Destroy(gameObject); // Fallback if no animator exists
+            Destroy(gameObject);
         }
     }
 
@@ -224,7 +215,6 @@ public class Unit : MonoBehaviour
     {
         currentHealth -= damage;
 
-        // Update the health bar
         if (healthBar != null)
         {
             HealthBar healthBarScript = healthBar.GetComponentInChildren<HealthBar>();

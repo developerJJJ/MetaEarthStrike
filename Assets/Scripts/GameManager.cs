@@ -1,11 +1,14 @@
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+    public float normalTimeScale = 1f;  // Normal speed
+    public float acceleratedTimeScale = 5f;  // Accelerated speed
     public TMP_Text goldText;
-    public float goldIncrementPerSecond = 10f; // Gold gained per second (float for smoother increase)
+    public float goldIncrementPerSecond = 10f;
     public int playerGold = 0;
     public int enemyGold = 0;
     public Transform playerSpawnPoint;
@@ -15,21 +18,32 @@ public class GameManager : MonoBehaviour
     public Button spawnButton1;
     public Button spawnButton2;
     public float spawnInterval = 10f;
+    public GameObject enemyBase;
+    public GameObject winPanel;
+    public Button restartButton;
+    public TMP_Text winText
     private float playerSpawnTimer = 0f;
     private float enemySpawnTimer = 0f;
-    private float goldAccumulator = 0f; // Add this line
-    private int accumulatedGold = 0; // Add this line
+    private float goldAccumulator = 0f;
+    private int accumulatedGold = 0;;
+    private bool isGameOver = false;
 
     void Start()
     {
+        Time.timeScale = acceleratedTimeScale;
+
         SpawnUnit(prefabWarrior, true);
         SpawnUnit(prefabWarrior, false);
         spawnButton1.onClick.AddListener(() => SpawnUnitWithCost(1));
         spawnButton2.onClick.AddListener(() => SpawnUnitWithCost(2));
+        winPanel.SetActive(false);
+        restartButton.onClick.AddListener(RestartGame);
     }
 
     public void SpawnUnitWithCost(int buttonNumber)
     {
+        if (isGameOver) return;
+
         int cost;
         GameObject unitPrefab;
 
@@ -45,7 +59,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            return; // Invalid button number
+            return;
         }
 
         if (playerGold >= cost)
@@ -57,18 +71,19 @@ public class GameManager : MonoBehaviour
 
     public void SpawnUnit(GameObject unitPrefab, bool isPlayer)
     {
+        if (isGameOver) return;
+
         Transform spawnLocation = isPlayer ? playerSpawnPoint : enemySpawnPoint;
         GameObject unit = Instantiate(unitPrefab, spawnLocation.position, Quaternion.identity);
 
-        // *** THIS IS THE KEY CHANGE ***
         Unit unitScript = unit.GetComponent<Unit>();
         if (unitScript != null)
         {
-            unitScript.team = isPlayer ? "Player" : "Enemy"; // Set the team here!
+            unitScript.team = isPlayer ? "Player" : "Enemy";
             unitScript.SetDirection(isPlayer ? 1f : -1f);
         }
 
-        unit.tag = isPlayer ? "PlayerUnit" : "EnemyUnit"; // Set the tag AFTER setting the team
+        unit.tag = isPlayer ? "PlayerUnit" : "EnemyUnit";
 
         SpriteRenderer spriteRenderer = unit.GetComponent<SpriteRenderer>();
         if (spriteRenderer != null)
@@ -79,6 +94,8 @@ public class GameManager : MonoBehaviour
 
     void Update()
     {
+        if (isGameOver) return;
+
         playerSpawnTimer += Time.deltaTime;
         enemySpawnTimer += Time.deltaTime;
 
@@ -94,20 +111,52 @@ public class GameManager : MonoBehaviour
             enemySpawnTimer = 0f;
         }
 
-        // Corrected gold increment logic
         goldAccumulator += goldIncrementPerSecond * Time.deltaTime;
 
         if (goldAccumulator >= 1f)
         {
             accumulatedGold = Mathf.FloorToInt(goldAccumulator);
-            playerGold += accumulatedGold; // Add the accumulated gold
-            goldAccumulator -= accumulatedGold; // Reset the accumulator, keeping the fractional part
+            playerGold += accumulatedGold;
+            goldAccumulator -= accumulatedGold;
         }
 
         if (goldText != null)
         {
             goldText.text = "Gold: " + playerGold.ToString();
         }
+
+        CheckWinCondition();
     }
 
+    private void CheckWinCondition()
+    {
+        if (enemyBase == null)
+        {
+            PlayerWins();
+        }
+    }
+
+    private void PlayerWins()
+    {
+        isGameOver = true;
+
+        if (winPanel != null)
+        {
+            winPanel.SetActive(true);
+        }
+        if (winText != null)
+        {
+            winText.text = "You Win!";
+        }
+    }
+
+    public void RestartGame()
+    {
+        if (isGameOver)
+        {
+            isGameOver = false;
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            Debug.Log("Restarting game");
+        }
+    }
 }

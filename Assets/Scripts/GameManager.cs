@@ -21,11 +21,11 @@ public class GameManager : MonoBehaviour
     public GameObject enemyBase;
     public GameObject winPanel;
     public Button restartButton;
-    public TMP_Text winText
+    public TMP_Text winText;
     private float playerSpawnTimer = 0f;
     private float enemySpawnTimer = 0f;
     private float goldAccumulator = 0f;
-    private int accumulatedGold = 0;;
+    private int accumulatedGold = 0;
     private bool isGameOver = false;
 
     void Start()

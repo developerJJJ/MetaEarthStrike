@@ -178,7 +178,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 45
+    m_FontSize: 40
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 0
@@ -189,9 +189,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Spawn archer
-
-    12 Gold'
+  m_Text: Archer 12 Gold
 --- !u!222 &29950006
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -242,7 +240,7 @@ GameObject:
   - component: {fileID: 204560346}
   - component: {fileID: 204560347}
   - component: {fileID: 204560348}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -258,7 +256,7 @@ Transform:
   m_GameObject: {fileID: 204560345}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 5.17, y: 0, z: 0}
+  m_LocalPosition: {x: 5.175, y: 0.106, z: 0}
   m_LocalScale: {x: 1.76, y: 1.76, z: 1.76}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -363,7 +361,7 @@ BoxCollider2D:
     drawMode: 2
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 16.19, y: 3.34}
+  m_Size: {x: 16.19, y: 3.39}
   m_EdgeRadius: 0
 --- !u!1 &215527318
 GameObject:
@@ -1083,8 +1081,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -506, y: -431}
-  m_SizeDelta: {x: 305.9657, y: 207.7608}
+  m_AnchoredPosition: {x: -506, y: -468.9181}
+  m_SizeDelta: {x: 305.9657, y: 131.9246}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &527330642
 MonoBehaviour:
@@ -1459,7 +1457,7 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 45
+    m_FontSize: 40
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 0
@@ -1470,9 +1468,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'Spawn warrior
-
-    10 Gold'
+  m_Text: Warrior 10 Gold
 --- !u!222 &672035345
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1852,6 +1848,11 @@ MonoBehaviour:
   enemyGold: 0
   playerSpawnPoint: {fileID: 122183876}
   enemySpawnPoint: {fileID: 240547997}
+  playerRaycastOrigin: {fileID: 122183876}
+  enemyRaycastOrigin: {fileID: 240547997}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
   prefabWarrior: {fileID: 3039047508346452303, guid: 78e428df1eaf81749897a1dacaa8bf6b, type: 3}
   prefabArcher: {fileID: 3039047508346452303, guid: c903dcf2ede2a444aa11ed7f49856469, type: 3}
   spawnButton1: {fileID: 527330642}
@@ -1977,8 +1978,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -187, y: -431}
-  m_SizeDelta: {x: 305.9657, y: 207.7608}
+  m_AnchoredPosition: {x: -187, y: -468.9181}
+  m_SizeDelta: {x: 305.9657, y: 131.9246}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1879256751
 MonoBehaviour:

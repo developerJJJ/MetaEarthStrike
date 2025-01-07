@@ -13,6 +13,7 @@ public class GameManager : MonoBehaviour
     public int enemyGold = 0;
     public Transform playerSpawnPoint;
     public Transform enemySpawnPoint;
+    public LayerMask groundLayer; // Add a LayerMask to filter the raycast
     public GameObject prefabWarrior;
     public GameObject prefabArcher;
     public Button spawnButton1;
@@ -22,6 +23,7 @@ public class GameManager : MonoBehaviour
     public GameObject winPanel;
     public Button restartButton;
     public TMP_Text winText;
+    private Transform spawnLocation;
     private float playerSpawnTimer = 0f;
     private float enemySpawnTimer = 0f;
     private float goldAccumulator = 0f;
@@ -74,21 +76,59 @@ public class GameManager : MonoBehaviour
         if (isGameOver) return;
 
         Transform spawnLocation = isPlayer ? playerSpawnPoint : enemySpawnPoint;
-        GameObject unit = Instantiate(unitPrefab, spawnLocation.position, Quaternion.identity);
 
-        Unit unitScript = unit.GetComponent<Unit>();
-        if (unitScript != null)
+        RaycastHit2D hit = Physics2D.Raycast(spawnLocation.position, Vector2.down, Mathf.Infinity, groundLayer);
+
+        if (hit.collider != null)
         {
-            unitScript.team = isPlayer ? "Player" : "Enemy";
-            unitScript.SetDirection(isPlayer ? 1f : -1f);
+            // 1. Instantiate the unit FIRST
+            GameObject unitInstance = Instantiate(unitPrefab, spawnLocation.position, Quaternion.identity);
+
+            // 2. Get the Collider2D *from the INSTANCE*
+            BoxCollider2D unitCollider = unitInstance.GetComponent<BoxCollider2D>(); // Or your specific collider type
+            if (unitCollider == null)
+            {
+                Debug.LogError("Unit instance does not have a BoxCollider2D!");
+                Destroy(unitInstance); // Clean up the instantiated unit
+                return;
+            }
+
+            // 3. Get the bounds *after* instantiation
+            Bounds unitBounds = unitCollider.bounds;
+
+            if (unitBounds.size.y == 0)
+            {
+                Debug.LogError("Unit collider has a height of 0! Check the collider on the prefab.");
+                Destroy(unitInstance); // Clean up
+                return;
+            }
+
+            Vector2 groundTopWorld = hit.point;
+
+            // 4. Calculate the correct spawn position
+            Vector2 spawnPosition = new Vector2(spawnLocation.position.x, groundTopWorld.y + unitBounds.extents.y);
+
+            // 5. Move the instance to the correct position
+            unitInstance.transform.position = spawnPosition;
+
+            Unit unitScript = unitInstance.GetComponent<Unit>();
+            if (unitScript != null)
+            {
+                unitScript.team = isPlayer ? "Player" : "Enemy";
+                unitScript.SetDirection(isPlayer ? 1f : -1f);
+            }
+
+            unitInstance.tag = isPlayer ? "PlayerUnit" : "EnemyUnit";
+
+            SpriteRenderer spriteRenderer = unitInstance.GetComponent<SpriteRenderer>();
+            if (spriteRenderer != null)
+            {
+                spriteRenderer.color = isPlayer ? new Color(0.5f, 0.5f, 1f, 1f) : new Color(1f, 0.5f, 0.5f, 1f);
+            }
         }
-
-        unit.tag = isPlayer ? "PlayerUnit" : "EnemyUnit";
-
-        SpriteRenderer spriteRenderer = unit.GetComponent<SpriteRenderer>();
-        if (spriteRenderer != null)
+        else
         {
-            spriteRenderer.color = isPlayer ? new Color(0.5f, 0.5f, 1f, 1f) : new Color(1f, 0.5f, 0.5f, 1f);
+            Debug.LogError("No ground found below spawn point!");
         }
     }
 

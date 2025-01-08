@@ -157,7 +157,7 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 1.04, y: 2.08}
+    oldSize: {x: 1.7333333, y: 3.4666667}
     newSize: {x: 2.0416667, y: 3.5208333}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -186,6 +186,7 @@ MonoBehaviour:
   animator: {fileID: 3256005318260313561}
   projectilePrefab: {fileID: 7142287044366714663, guid: bb1651861a07b6c469f27944edbdcc63, type: 3}
   projectileSpawnPoint: {fileID: 7317136154844107268}
+  team: 
 --- !u!95 &3256005318260313561
 Animator:
   serializedVersion: 7
@@ -194,9 +195,9 @@ Animator:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3039047508346452303}
-  m_Enabled: 0
+  m_Enabled: 1
   m_Avatar: {fileID: 0}
-  m_Controller: {fileID: 9100000, guid: e83ff2f570111c64fa1496ec30de25cf, type: 2}
+  m_Controller: {fileID: 9100000, guid: d2198d900275ace48913be07abeebb00, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 0
